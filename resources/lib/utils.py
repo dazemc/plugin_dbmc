@@ -1,12 +1,12 @@
 import os, sys, urllib.request, urllib.parse, urllib.error, time
-import xbmc, xbmcaddon
+import xbmcvfs, xbmcaddon
 
 ADDON           = xbmcaddon.Addon(id='plugin.dbmc')
 LANGUAGE_STRING = ADDON.getLocalizedString
 ADDON_NAME      = xbmcaddon.Addon().getAddonInfo('id')
 ADDON_PATH      = xbmcaddon.Addon().getAddonInfo('path')
 ICON            = xbmcaddon.Addon().getAddonInfo('icon')
-DATAPATH        = xbmc.translatePath( xbmcaddon.Addon().getAddonInfo('profile') )
+DATAPATH        = xbmcvfs.translatePath( xbmcaddon.Addon().getAddonInfo('profile') )
 DROPBOX_SEP     = '/'
 
 def log(txt):
@@ -50,7 +50,7 @@ def get_cache_path(account_name):
     #Use user defined location?
     if datapath == '' or os.path.normpath(datapath) == '':
         #get the default path 
-        datapath = xbmc.translatePath( ADDON.getAddonInfo('profile') )
+        datapath = xbmcvfs.translatePath( ADDON.getAddonInfo('profile') )
     return os.path.normpath(datapath + '/' + account_name)
 
 def replaceFileExtension(path, extension):
