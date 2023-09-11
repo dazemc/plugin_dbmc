@@ -19,7 +19,7 @@
 # *
 # */
 
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 from resources.lib.utils import *
 from resources.lib.dropboxviewer import *
@@ -46,7 +46,7 @@ class FolderBrowser(DropboxViewer):
         return url
     
 def run(params): # This is the entrypoint
-    account_name = urllib.unquote( params.get('account', '') )
+    account_name = urllib.parse.unquote( params.get('account', '') )
     account_settings = login.get_account(account_name) 
     if account_settings:
         browser = FolderBrowser(params, account_settings)

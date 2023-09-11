@@ -68,7 +68,7 @@ class SynchronizeThread(threading.Thread):
                 self._sync_account.createSyncRoot()
                 initalSync = True
             #prepare item list
-            for path, meta in items.iteritems():
+            for path, meta in items.items():
                 if not initalSync:
                     log_debug('New item info received for %s'%(path) )
                 if path.find(self._sync_account.root.path) == 0:
@@ -104,16 +104,16 @@ class SynchronizeThread(threading.Thread):
     def updateProgress(self, handled, total):
         now = time.time()
         if (self._lastProgressUpdate + self.PROGRESS_TIMEOUT) < now:
-            progress_text = u'%s/%s (%s)' % (str(handled), str(total), self._sync_account.account_name)
+            progress_text = '%s/%s (%s)' % (str(handled), str(total), self._sync_account.account_name)
             log('Synchronizing number of items: ' + progress_text )
-            buildin = u'Notification(%s,%s,%d,%s)' % (LANGUAGE_STRING(30114).decode("utf-8"), progress_text, 7000, ICON.decode("utf-8"))
+            buildin = 'Notification(%s,%s,%d,%s)' % (LANGUAGE_STRING(30114).decode("utf-8"), progress_text, 7000, ICON.decode("utf-8"))
             xbmc.executebuiltin(buildin.encode("utf-8"))
             self._lastProgressUpdate = now
             #Also store the new data (frequently)
             self._sync_account.storeSyncData()
 
     def updateProgressFinished(self, handled, total):
-        progress_text = u'%s (%s)' % (str(handled), self._sync_account.account_name)
+        progress_text = '%s (%s)' % (str(handled), self._sync_account.account_name)
         log('Number of items synchronized: ' + progress_text )
-        buildin = u'Notification(%s,%s%s,%d,%s)' % (LANGUAGE_STRING(30106).decode("utf-8"), LANGUAGE_STRING(30107).decode("utf-8"), progress_text, 10000, ICON.decode("utf-8"))
+        buildin = 'Notification(%s,%s%s,%d,%s)' % (LANGUAGE_STRING(30106).decode("utf-8"), LANGUAGE_STRING(30107).decode("utf-8"), progress_text, 10000, ICON.decode("utf-8"))
         xbmc.executebuiltin(buildin.encode("utf-8"))

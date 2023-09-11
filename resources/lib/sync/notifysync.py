@@ -20,7 +20,7 @@
 # */
 
 import socket
-import threading, Queue
+import threading, queue
 import json
 
 from resources.lib.utils import *
@@ -47,7 +47,7 @@ class NotifySyncServer(threading.Thread):
         self._socket = None
         self._stop = False
         self._usedPort = 0
-        self._notifyList = Queue.Queue() #thread safe
+        self._notifyList = queue.Queue() #thread safe
         
     def setupServer(self):
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

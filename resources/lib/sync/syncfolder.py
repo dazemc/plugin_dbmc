@@ -58,7 +58,7 @@ class SyncFolder(SyncObject):
     def getItemsInfo(self):
         metaDataList = {}
         metaDataList[self.path] = self.getItemInfo()
-        for path, child in self._children.iteritems():
+        for path, child in self._children.items():
             if child.isDir:
                 childMetaData = child.getItemsInfo()
                 metaDataList.update( childMetaData )
@@ -139,7 +139,7 @@ class SyncFolder(SyncObject):
                 pass
             else:
                 log_error('Unknown folder status(%s) for : %s!'%(self._state, self.path))
-        except Exception, e:
+        except Exception as e:
             log_error('Exception occurred for folder %s' % self._localPath)
             log_error( traceback.format_exc() )
             if(self._failure):
@@ -152,7 +152,7 @@ class SyncFolder(SyncObject):
         dirs2Sync = []
         items2Sync = []
         removeList = {}
-        for path, child in self._children.iteritems():
+        for path, child in self._children.items():
             if child.isDir:
                 newDirs, newItems = child.getItems2Sync()
                 dirs2Sync += newDirs
@@ -177,7 +177,7 @@ class SyncFolder(SyncObject):
     
     def setClient(self, client):
         self._client = client
-        for child in self._children.itervalues():
+        for child in self._children.values():
             child.setClient(client)
 
     def updateLocalPath(self, parentSyncPath):
@@ -188,12 +188,12 @@ class SyncFolder(SyncObject):
         if self._localPath: 
             #for folders add the os seperator (xbmcvfs.exists() needs it) 
             self._localPath += os.sep
-            for path, child in self._children.iteritems():
+            for path, child in self._children.items():
                 child.updateLocalPath(self._localPath)
 
     def updateLocalRootPath(self, syncPath):
         #don't add the self._name to the syncpath for root!
         self._localPath = os.path.normpath(syncPath)
         self._localPath += os.sep
-        for path, child in self._children.iteritems():
+        for path, child in self._children.items():
             child.updateLocalPath(self._localPath)

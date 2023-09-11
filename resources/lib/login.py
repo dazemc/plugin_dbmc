@@ -23,13 +23,13 @@ import xbmcaddon
 import xbmcgui
 
 import uuid
-import urllib, urllib2
+import urllib.request, urllib.parse, urllib.error, urllib.request, urllib.error, urllib.parse
 import json
 
-from utils import *
+from .utils import *
 
 from resources.lib.accountsettings import AccountSettings
-from dropbox import client, rest
+from .dropbox import client, rest
 
 APP_KEY= 'QF9EBAwGS10NWBJFDRcCHxhfUR5bDhIcQhAeV0YTGBcACgg='
 SUCCES = 'Succes'
@@ -39,7 +39,7 @@ def unlock(account_settings):
     win = xbmcgui.Window(xbmcgui.getCurrentWindowId())
     if (account_settings.passcode != ''):
         #create windows property name
-        win_prop_name = urllib.quote(account_settings.account_name.encode("utf-8") + 'Unlocked')
+        win_prop_name = urllib.parse.quote(account_settings.account_name.encode("utf-8") + 'Unlocked')
         unlockTimeout = account_settings.passcodetimeout * 60 # to minutes
         #get last unlocked time
         try:
@@ -65,7 +65,7 @@ def unlock(account_settings):
     return unlocked
 
 def clear_unlock(account_settings):
-    win_prop_name = urllib.quote(account_settings.account_name.encode("utf-8") + 'Unlocked')
+    win_prop_name = urllib.parse.quote(account_settings.account_name.encode("utf-8") + 'Unlocked')
     win = xbmcgui.Window(xbmcgui.getCurrentWindowId())
     win.clearProperty(win_prop_name)
 
@@ -112,7 +112,7 @@ def getAccessToken():
         try:
             access_token, user_id = flow.finish(accesscode)
             log('Access token received')
-        except rest.ErrorResponse, e:
+        except rest.ErrorResponse as e:
             log_error('Failed getting the access token: %s'%str(e))
             dialog = xbmcgui.Dialog()
             dialog.ok(ADDON_NAME, LANGUAGE_STRING(30201), str(e), LANGUAGE_STRING(30202))
@@ -163,17 +163,17 @@ class DbmcOauth2(object):
         return result
 
     def getData(self, params):
-        paramsEnc = urllib.urlencode(params)
+        paramsEnc = urllib.parse.urlencode(params)
         result = SUCCES
         data = None
         url = '%s%s'%(self.HOST, self.PAGE)
-        req = urllib2.Request(url, data=paramsEnc)
+        req = urllib.request.Request(url, data=paramsEnc)
         #f = urllib.urlopen('%s%s'%(self.HOST, self.PAGE), params )
         #response = f.read()
         try: 
-            response = urllib2.urlopen(req)
+            response = urllib.request.urlopen(req)
             data = response.read()
             log_debug('Received url data: %s'%repr(data))
-        except urllib2.URLError as e:
+        except urllib.error.URLError as e:
             result = repr(e)
         return result, data

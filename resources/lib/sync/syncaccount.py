@@ -48,13 +48,13 @@ class SyncAccount(object):
         self.account_name = account_name
         self._access_token = ''
         self._enabled = False
-        self._syncPath = u''
+        self._syncPath = ''
         self._syncFreq = 0 #minutes
         self._newSyncTime = 0
         self._client = None
         self._clientCursor = None
         self.root = None
-        self._remoteSyncPath = u'' #DROPBOX_SEP
+        self._remoteSyncPath = '' #DROPBOX_SEP
         self.syncSemaphore = threading.Semaphore()
         self._storageFile = None
         self._sync_requests = []
@@ -120,7 +120,7 @@ class SyncAccount(object):
 
     def _get_settings( self ):
         account = AccountSettings(self.account_name)
-        self._storageFile = os.path.normpath(account.account_dir + u'/sync_data.pik')
+        self._storageFile = os.path.normpath(account.account_dir + '/sync_data.pik')
         gotSemaphore = True
         enable = account.synchronisation
         tempPath = account.syncpath
@@ -156,7 +156,7 @@ class SyncAccount(object):
             dialog = xbmcgui.Dialog()
             dialog.ok(ADDON_NAME, LANGUAGE_STRING(30111))
         self._enabled = enable
-        if self._syncPath == u'':
+        if self._syncPath == '':
             #get initial location
             self._syncPath = tempPath
         #Sync path changed?
@@ -259,7 +259,7 @@ class SyncAccount(object):
             log_debug('Setup SyncRoot with stored remote data')
             cursor, remoteData = self.getSyncData()
             if remoteData:
-                for path, meta in remoteData.iteritems():
+                for path, meta in remoteData.items():
                     if isinstance(path, str):
                         #perviously stored as str iso. unicode... So make it unicode now.
                         path = path.decode("utf-8")

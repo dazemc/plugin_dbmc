@@ -1,4 +1,4 @@
-import os, sys, urllib, time
+import os, sys, urllib.request, urllib.parse, urllib.error, time
 import xbmc, xbmcaddon
 
 ADDON           = xbmcaddon.Addon(id='plugin.dbmc')
@@ -7,24 +7,24 @@ ADDON_NAME      = xbmcaddon.Addon().getAddonInfo('id')
 ADDON_PATH      = xbmcaddon.Addon().getAddonInfo('path')
 ICON            = xbmcaddon.Addon().getAddonInfo('icon')
 DATAPATH        = xbmc.translatePath( xbmcaddon.Addon().getAddonInfo('profile') )
-DROPBOX_SEP     = u'/'
+DROPBOX_SEP     = '/'
 
 def log(txt):
     if isinstance (txt,str):
         txt = txt.decode("utf-8")
-    message = u'%s: %s' % (ADDON_NAME, txt)
+    message = '%s: %s' % (ADDON_NAME, txt)
     xbmc.log(msg=message.encode("utf-8"), level=xbmc.LOGNOTICE)
     
 def log_error(txt):
     if isinstance (txt,str):
         txt = txt.decode("utf-8")
-    message = u'%s: %s' % (ADDON_NAME, txt)
+    message = '%s: %s' % (ADDON_NAME, txt)
     xbmc.log(msg=message.encode("utf-8"), level=xbmc.LOGERROR)
 
 def log_debug(txt):
     if isinstance (txt,str):
         txt = txt.decode("utf-8")
-    message = u'%s: %s' % (ADDON_NAME, txt)
+    message = '%s: %s' % (ADDON_NAME, txt)
     xbmc.log(msg=message.encode("utf-8"), level=xbmc.LOGDEBUG)
 
 def parse_argv():
@@ -36,7 +36,7 @@ def parse_argv():
         if paramstring:
             splitparams = paramstring.lstrip('?').split('&')
             for item in splitparams:
-                item = urllib.unquote_plus(item)
+                item = urllib.parse.unquote_plus(item)
                 keyval = item.split('=')
                 params[keyval[0]] = keyval[1]
         return False, params
@@ -63,9 +63,9 @@ def replaceFileExtension(path, extension):
         return newPath + extension
 
 def xor(w1, w2):
-    from itertools import izip, cycle
+    from itertools import cycle
     '''xor two strings together with the lenght of the first string limiting'''
-    return ''.join(chr(ord(c1)^ord(c2)) for c1, c2 in izip(w1, cycle(w2)))
+    return ''.join(chr(ord(c1)^ord(c2)) for c1, c2 in zip(w1, cycle(w2)))
     
 def decode_key(word):
     from base64 import b64encode, b64decode

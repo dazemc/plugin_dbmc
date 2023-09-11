@@ -26,19 +26,19 @@ import shutil
 
 import os
 import time
-import threading, Queue
+import threading, queue
 
-from utils import *
+from .utils import *
 
-from dropbox import client, rest
-from StringIO import StringIO
+from .dropbox import client, rest
+from io import StringIO
 
-from dropboxprogress import DropboxBackgroundProgress
+from .dropboxprogress import DropboxBackgroundProgress
 
 try:
     import StorageServer
 except:
-    import storageserverdummy as StorageServer
+    from . import storageserverdummy as StorageServer
 
 def command():
     """a decorator for handling authentication and exceptions"""
@@ -46,9 +46,9 @@ def command():
         def wrapper(self, *args, **keywords):
             try:
                 return f(self, *args, **keywords)
-            except TypeError, e:
+            except TypeError as e:
                 log_error('TypeError: %s' %str(e))
-            except rest.ErrorResponse, e:
+            except rest.ErrorResponse as e:
                 self.DropboxAPI = None
                 msg = e.user_error_msg or str(e)
                 log_error("%s failed: %s"%(f.__name__, msg) )
@@ -64,7 +64,7 @@ def path_to(path):
     Dropbox API uses "utf-8" coding!
     This functions makes sure that it is utf-8.
     '''
-    if isinstance (path, unicode):
+    if isinstance (path, str):
         path = path.encode("utf-8")
     return path
 
@@ -79,7 +79,7 @@ def path_from(path):
     return path
 
 def getLocalSyncPath(localSyncPath, remoteSyncPath, itemPath):
-    itemPath = itemPath.replace(remoteSyncPath, u'', 1)
+    itemPath = itemPath.replace(remoteSyncPath, '', 1)
     localPath = os.path.normpath(localSyncPath + DROPBOX_SEP + itemPath)
     return localPath
 
@@ -120,7 +120,7 @@ class XBMCDropBoxClient(object):
             #log_debug("Getting dropbox client with token: %s"%self._access_token)
             try:
                 self.DropboxAPI = client.DropboxClient(self._access_token)
-            except rest.ErrorResponse, e:
+            except rest.ErrorResponse as e:
                 msg = e.user_error_msg or str(e)
                 self.DropboxAPI = None
         return (self.DropboxAPI != None), msg
@@ -164,7 +164,7 @@ class XBMCDropBoxClient(object):
             if directory or stored == '':
                 try:
                     resp = self.DropboxAPI.metadata(path=path_to(dirname), hash=hashstr)
-                except rest.ErrorResponse, e:
+                except rest.ErrorResponse as e:
                     msg = e.user_error_msg or str(e)
                     if '304' in msg:
                         #cached data is still the same
@@ -204,7 +204,7 @@ class XBMCDropBoxClient(object):
         margin = 20*60 #20 mins
         resp = None
         #check if stored link is still valid
-        stored = self._cache.get(u"mediaUrl:"+path)
+        stored = self._cache.get("mediaUrl:"+path)
         if stored != '':
             stored = eval(stored)
             if 'expires' in stored:
@@ -223,7 +223,7 @@ class XBMCDropBoxClient(object):
             resp = self.DropboxAPI.media( path_to(path) )
             #store the link
             log_debug("MediaUrl storing url.")
-            self._cache.set(u"mediaUrl:"+path, repr(resp))
+            self._cache.set("mediaUrl:"+path, repr(resp))
         if resp:
             return resp['url']
         else:
@@ -308,10 +308,10 @@ class XBMCDropBoxClient(object):
             cacheFile.close()
             log_debug("Downloaded file to: %s"%location)
             succes = True
-        except IOError, e:
+        except IOError as e:
             msg = str(e)
             log_error('Failed saving file %s. Error: %s' %(location,msg) )
-        except rest.ErrorResponse, e:
+        except rest.ErrorResponse as e:
             msg = e.user_error_msg or str(e)
             log_error('Failed downloading file %s. Error: %s' %(location,msg))
         return succes
@@ -330,10 +330,10 @@ class XBMCDropBoxClient(object):
             cacheFile.close()
             log_debug("Downloaded file to: %s"%location)
             succes = True
-        except IOError, e:
+        except IOError as e:
             msg = str(e)
             log_error('Failed saving file %s. Error: %s' %(location,msg) )
-        except rest.ErrorResponse, e:
+        except rest.ErrorResponse as e:
             msg = e.user_error_msg or str(e)
             log_error('Failed downloading file %s. Error: %s' %(location,msg))
         return succes
@@ -384,7 +384,7 @@ class Uploader(client.DropboxClient.ChunkedUploader):
         try:
             (self.offset, self.upload_id) = self.client.upload_chunk(StringIO(self.last_block), next_chunk_size, self.offset, self.upload_id)
             self.last_block = None
-        except rest.ErrorResponse, e:
+        except rest.ErrorResponse as e:
             reply = e.body
             if "offset" in reply and reply['offset'] != 0:
                 if reply['offset'] > self.offset:
@@ -402,7 +402,7 @@ class Downloader(threading.Thread):
         self.location = location
         self.isDir = isDir
         self._client = client
-        self._fileList = Queue.Queue() #thread safe
+        self._fileList = queue.Queue() #thread safe
         self._progress = xbmcgui.DialogProgress()
         self._progress.create(LANGUAGE_STRING(30039))
         self._progress.update( 0 )

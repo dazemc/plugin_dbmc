@@ -37,14 +37,14 @@ class AccountSettings(object):
             self.account_name = account_name.decode("utf-8")
         else:
             self.account_name = account_name
-        self.access_token = u''
+        self.access_token = ''
         self.passcode = ''
         self.passcodetimeout = 30
         self.session_id = ''
         self.synchronisation = False
         self.syncfreq = 5
-        self.syncpath = u''
-        self.remotepath = u''
+        self.syncpath = ''
+        self.remotepath = ''
         dataPath = xbmc.translatePath( ADDON.getAddonInfo('profile') ).decode("utf-8")
         self.account_dir = os.path.normpath(dataPath + '/accounts/' + self.account_name) + os.sep #add os seperator because it is a dir
         #read from location if present
@@ -79,7 +79,7 @@ class AccountSettings(object):
         if not xbmcvfs.exists( self.account_dir.encode("utf-8") ):
             xbmcvfs.mkdirs( self.account_dir.encode("utf-8") )
         #Save...
-        settings_file = os.path.normpath(self.account_dir + u'settings')
+        settings_file = os.path.normpath(self.account_dir + 'settings')
         try:
             with open(settings_file, 'wb') as file_obj:
                 pickle.dump(self.__dict__, file_obj)

@@ -96,7 +96,7 @@ class SyncFile(SyncObject):
                 pass
             else:
                 log_error('Unknown file status(%s) for: %s!'%(self._state, self.path))
-        except Exception, e:
+        except Exception as e:
             log_error('Exception occurred for file %s' % self._localPath)
             log_error( traceback.format_exc() )
             if(self._failure):

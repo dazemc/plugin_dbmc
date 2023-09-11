@@ -22,7 +22,7 @@
 import xbmcplugin
 import xbmcgui
 
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 from resources.lib.utils import *
 from resources.lib.dropboxviewer import *
@@ -50,12 +50,12 @@ class DropboxSearch(DropboxViewer):
 
     def getUrl(self, path, media_items=0, module=None):
         url = super(DropboxSearch, self).getUrl(path, media_items, module)
-        url += '&search_text=' + urllib.quote(self._searchText)
+        url += '&search_text=' + urllib.parse.quote(self._searchText)
         return url
         
     
 def run(params): # This is the entrypoint
-    account_name = urllib.unquote( params.get('account', '') )
+    account_name = urllib.parse.unquote( params.get('account', '') )
     account_settings = login.get_account(account_name) 
     if account_settings:
         searchText = params.get('search_text', '')

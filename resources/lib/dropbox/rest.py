@@ -8,7 +8,7 @@ import io
 import socket
 import ssl
 import sys
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 try:
     import json
@@ -24,7 +24,7 @@ except ImportError:
 SDK_VERSION = "2.2.0"
 
 import os
-import six
+from . import six
 #TRUSTED_CERT_FILE = pkg_resources.resource_filename(__name__, 'trusted-certs.crt')
 TRUSTED_CERT_FILE = os.path.join(os.path.dirname(six.__file__), 'trusted-certs.crt')
 
@@ -204,8 +204,8 @@ class RESTClientObject(object):
             headers["Content-Length"] = len(body)
 
         # Reject any headers containing newlines; the error from the server isn't pretty.
-        for key, value in headers.items():
-            if isinstance(value, basestring) and '\n' in value:
+        for key, value in list(headers.items()):
+            if isinstance(value, str) and '\n' in value:
                 raise ValueError("headers should not contain newlines (%s: %s)" %
                                  (key, value))
 
@@ -411,9 +411,9 @@ def params_to_urlencoded(params):
     objects which are utf8-encoded.
     """
     def encode(o):
-        if isinstance(o, unicode):
+        if isinstance(o, str):
             return o.encode('utf8')
         else:
             return str(o)
-    utf8_params = {encode(k): encode(v) for k, v in params.iteritems()}
-    return urllib.urlencode(utf8_params)
+    utf8_params = {encode(k): encode(v) for k, v in params.items()}
+    return urllib.parse.urlencode(utf8_params)

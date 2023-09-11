@@ -22,9 +22,9 @@
 import xbmcplugin
 import xbmcgui
 
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import os, uuid
-import threading, Queue
+import threading, queue
 
 from resources.lib.utils import *
 from resources.lib.dropboxclient import *
@@ -60,7 +60,7 @@ class DropboxViewer(object):
         self._nrOfMediaItems = int( params.get('media_items', '%s'%MAX_MEDIA_ITEMS_TO_LOAD_ONCE) )
         self._module = params.get('module', '')
         self._contentType = params.get('content_type', 'executable')
-        self._current_path = urllib.unquote( params.get('path', DROPBOX_SEP) ).decode("utf-8")
+        self._current_path = urllib.parse.unquote( params.get('path', DROPBOX_SEP) ).decode("utf-8")
         #Add sorting options
         xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_TITLE)
         xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_DATE)
@@ -187,8 +187,8 @@ class DropboxViewer(object):
                 if self._useStreamingURLs and mediatype in ['video','music']:
                     #this doesn't work for pictures...
                     listItem.setProperty("IsPlayable", "true")
-                    url = sys.argv[0] + '?action=play' + '&path=' + urllib.quote(path.encode("utf-8"))
-                    url += '&account=' + urllib.quote(self._account_settings.account_name.encode("utf-8"))
+                    url = sys.argv[0] + '?action=play' + '&path=' + urllib.parse.quote(path.encode("utf-8"))
+                    url += '&account=' + urllib.parse.quote(self._account_settings.account_name.encode("utf-8"))
                 else:
                     url = self._loader.getFile(path)
                     #url = self.getMediaUrl(path)
@@ -236,8 +236,8 @@ class DropboxViewer(object):
             url += '&module=' + module
         else:
             url += '&module=' + self._module
-        url += '&account=' + urllib.quote(self._account_settings.account_name.encode("utf-8"))
-        url += '&path=' + urllib.quote(path.encode("utf-8"))
+        url += '&account=' + urllib.parse.quote(self._account_settings.account_name.encode("utf-8"))
+        url += '&path=' + urllib.parse.quote(path.encode("utf-8"))
         if media_items != 0:
             url += '&media_items=' + str(media_items)
         return url
@@ -245,11 +245,11 @@ class DropboxViewer(object):
     def getContextUrl(self, path, action, extra = None):
         url = 'XBMC.RunScript(plugin.dbmc, '
         url += 'action=%s' %( action )
-        url += '&account=' + urllib.quote(self._account_settings.account_name.encode("utf-8"))
+        url += '&account=' + urllib.parse.quote(self._account_settings.account_name.encode("utf-8"))
         if action == 'upload':
-            url += '&to_path=%s' %( urllib.quote(path.encode("utf-8")) )
+            url += '&to_path=%s' %( urllib.parse.quote(path.encode("utf-8")) )
         else:
-            url += '&path=%s' %( urllib.quote(path.encode("utf-8")) )
+            url += '&path=%s' %( urllib.parse.quote(path.encode("utf-8")) )
         if extra:
             url += '&' + extra
         url += ')'
@@ -345,8 +345,8 @@ class FileLoader(threading.Thread):
         self._thumbPath = thumbPath
         self._client = client
         self._module = module
-        self._thumbList = Queue.Queue() #thread safe
-        self._fileList = Queue.Queue() #thread safe
+        self._thumbList = queue.Queue() #thread safe
+        self._fileList = queue.Queue() #thread safe
         self._progress = DropboxBackgroundProgress("DialogExtendedProgressBar.xml", ADDON_PATH)
         self._progress.setHeading(LANGUAGE_STRING(30035))
 

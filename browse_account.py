@@ -44,14 +44,14 @@ class AccountBrowser(object):
         #check if the accounts directory is present, create otherwise
         # keep dataPath "utf-8" encoded
         dataPath = xbmc.translatePath( ADDON.getAddonInfo('profile') ).decode("utf-8")
-        self._accounts_dir = dataPath + u'/accounts/'
+        self._accounts_dir = dataPath + '/accounts/'
         if not xbmcvfs.exists( self._accounts_dir.encode("utf-8") ):
             xbmcvfs.mkdirs( self._accounts_dir.encode("utf-8") )
         #Check if we need to get previous account settings from old addon settings
-        if ADDON.getSetting('access_token').decode("utf-8") != u'':
+        if ADDON.getSetting('access_token').decode("utf-8") != '':
             #Old access_token present so convert old settings!
             log('Converting old account settings and saving it')
-            account_name = u'Account1'
+            account_name = 'Account1'
             access_token = ADDON.getSetting('access_token').decode("utf-8")
             client = XBMCDropBoxClient(access_token=access_token)
             account_info = client.getAccountInfo()
@@ -125,7 +125,7 @@ class AccountBrowser(object):
         url = sys.argv[0]
         url += '?content_type=' + self._content_type
         url += "&module=" + 'browse_folder'
-        url +="&account=" + urllib.quote(name.encode("utf-8"))
+        url +="&account=" + urllib.parse.quote(name.encode("utf-8"))
         #Add a context menu item
         contextMenuItems = []
         contextMenuItems.append( (LANGUAGE_STRING(30044), self.getContextUrl('remove', name) ) )
@@ -150,7 +150,7 @@ class AccountBrowser(object):
         url = 'XBMC.RunPlugin(plugin://plugin.dbmc/?'
         url += 'action=%s' %( action )
         url += "&module=" + 'browse_account'
-        url += '&account=' + urllib.quote(account_name.encode("utf-8"))
+        url += '&account=' + urllib.parse.quote(account_name.encode("utf-8"))
         url += ')'
         return url
 
@@ -213,7 +213,7 @@ def change_synchronization(account_settings):
         selected_folder = dialog.browse(3, LANGUAGE_STRING(30102), 'files', mask='', treatAsFolder=True, defaultt=account_settings.syncpath)
         selected_folder = selected_folder.decode("utf-8")
         log_debug('Selected local folder: %s' % (selected_folder) )
-        if selected_folder != u'':
+        if selected_folder != '':
             account_settings.syncpath = selected_folder
             from resources.lib.dropboxfilebrowser import DropboxFileBrowser
             #select the remote folder
@@ -279,7 +279,7 @@ def run(params): # This is the entrypoint
         xbmc.executebuiltin('container.Refresh()')
     elif action == 'remove':
         #remove the selected account
-        account_name = urllib.unquote( params.get('account', '') )
+        account_name = urllib.parse.unquote( params.get('account', '') )
         account_settings = login.get_account(account_name) 
         if account_settings:
             dialog = xbmcgui.Dialog()
@@ -299,14 +299,14 @@ def run(params): # This is the entrypoint
         #return to where we were and refresh
         xbmc.executebuiltin('container.Refresh()')
     elif action == 'change_passcode':
-        account_name = urllib.unquote( params.get('account', '') )
+        account_name = urllib.parse.unquote( params.get('account', '') )
         account_settings = login.get_account(account_name)
         if account_settings:
             change_passcode(account_settings)
         #return to where we were
         xbmcplugin.endOfDirectory(int(sys.argv[1]), succeeded=False)
     elif action == 'change_synchronization':
-        account_name = urllib.unquote( params.get('account', '') )
+        account_name = urllib.parse.unquote( params.get('account', '') )
         account_settings = login.get_account(account_name)
         if account_settings:
             change_synchronization(account_settings)
