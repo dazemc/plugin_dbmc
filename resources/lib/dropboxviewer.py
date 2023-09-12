@@ -60,7 +60,7 @@ class DropboxViewer(object):
         self._nrOfMediaItems = int( params.get('media_items', '%s'%MAX_MEDIA_ITEMS_TO_LOAD_ONCE) )
         self._module = params.get('module', '')
         self._contentType = params.get('content_type', 'executable')
-        self._current_path = urllib.parse.unquote( params.get('path', DROPBOX_SEP) ).decode("utf-8")
+        self._current_path = urllib.parse.unquote( params.get('path', DROPBOX_SEP) )
         #Add sorting options
         xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_TITLE)
         xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_DATE)
@@ -187,8 +187,8 @@ class DropboxViewer(object):
                 if self._useStreamingURLs and mediatype in ['video','music']:
                     #this doesn't work for pictures...
                     listItem.setProperty("IsPlayable", "true")
-                    url = sys.argv[0] + '?action=play' + '&path=' + urllib.parse.quote(path.encode("utf-8"))
-                    url += '&account=' + urllib.parse.quote(self._account_settings.account_name.encode("utf-8"))
+                    url = sys.argv[0] + '?action=play' + '&path=' + urllib.parse.quote(path)
+                    url += '&account=' + urllib.parse.quote(self._account_settings.account_name)
                 else:
                     url = self._loader.getFile(path)
                     #url = self.getMediaUrl(path)
@@ -236,8 +236,8 @@ class DropboxViewer(object):
             url += '&module=' + module
         else:
             url += '&module=' + self._module
-        url += '&account=' + urllib.parse.quote(self._account_settings.account_name.encode("utf-8"))
-        url += '&path=' + urllib.parse.quote(path.encode("utf-8"))
+        url += '&account=' + urllib.parse.quote(self._account_settings.account_name)
+        url += '&path=' + urllib.parse.quote(path)
         if media_items != 0:
             url += '&media_items=' + str(media_items)
         return url
@@ -245,11 +245,11 @@ class DropboxViewer(object):
     def getContextUrl(self, path, action, extra = None):
         url = 'XBMC.RunScript(plugin.dbmc, '
         url += 'action=%s' %( action )
-        url += '&account=' + urllib.parse.quote(self._account_settings.account_name.encode("utf-8"))
+        url += '&account=' + urllib.parse.quote(self._account_settings.account_name)
         if action == 'upload':
-            url += '&to_path=%s' %( urllib.parse.quote(path.encode("utf-8")) )
+            url += '&to_path=%s' %( urllib.parse.quote(path) )
         else:
-            url += '&path=%s' %( urllib.parse.quote(path.encode("utf-8")) )
+            url += '&path=%s' %( urllib.parse.quote(path) )
         if extra:
             url += '&' + extra
         url += ')'
@@ -295,7 +295,7 @@ class DropboxViewer(object):
         tumbLocation = os.path.normpath(tumbLocation)
         folderItems = []
         fileItems = []
-        if xbmcvfs.exists(cachedLocation.encode("utf-8")) or xbmcvfs.exists(tumbLocation.encode("utf-8")):
+        if xbmcvfs.exists(cachedLocation) or xbmcvfs.exists(tumbLocation):
             #folderItems = (os.path.basename(item['path']) for item in metadata['contents'] if item['is_dir']) if folder not in folderitems of generator expression does not work...
             for item in metadata['contents']:
                 if item['is_dir']:
@@ -303,7 +303,7 @@ class DropboxViewer(object):
                 else:
                     fileItems.append(os.path.basename(path_from(item['path'])))
         #remove shadow files/folders
-        if xbmcvfs.exists(cachedLocation.encode("utf-8")):
+        if xbmcvfs.exists(cachedLocation):
             for f in os.listdir(cachedLocation):
                 #check if folders/files needs to be removed
                 fName = os.path.join(cachedLocation, f)
@@ -316,7 +316,7 @@ class DropboxViewer(object):
                         log_debug('Removing cached file: %s' % (fName))
                         os.remove(fName)
         #remove tumb files/folders
-        if xbmcvfs.exists(tumbLocation.encode("utf-8")):
+        if xbmcvfs.exists(tumbLocation):
             #first replace the tumb file extention
             for i, f in enumerate(fileItems):
                 fileItems[i] = replaceFileExtension(f, 'jpg')
@@ -368,7 +368,7 @@ class FileLoader(threading.Thread):
                 location = self._getThumbLocation(thumb2Retrieve)
                 #Check if thumb already exists
                 # TODO: use database checking for this!
-                if not xbmcvfs.exists(location.encode("utf-8")):
+                if not xbmcvfs.exists(location):
                     #Doesn't exist so download it.
                     self._getThumbnail(thumb2Retrieve)
                 else:
@@ -378,7 +378,7 @@ class FileLoader(threading.Thread):
                 location = self._getShadowLocation(file2Retrieve)
                 #Check if thumb already exists
                 #TODO: use database checking for this!
-                if not xbmcvfs.exists(location.encode("utf-8")):
+                if not xbmcvfs.exists(location):
                     #Doesn't exist so download it.
                     self._getFile(file2Retrieve)
                 else:

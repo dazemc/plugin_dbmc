@@ -109,7 +109,7 @@ class SyncAccount(object):
     def remove_sync_data(self):
         # remove all sync data
         self.clearSyncData()
-        if xbmcvfs.exists( self._syncPath.encode("utf-8") ):
+        if xbmcvfs.exists( self._syncPath ):
             shutil.rmtree(self._syncPath)
 
     def _start_sync(self):
@@ -162,7 +162,7 @@ class SyncAccount(object):
         #Sync path changed?
         if self._syncPath != tempPath:
             if len(os.listdir(tempPath)) == 0:
-                if xbmcvfs.exists(self._syncPath.encode("utf-8")):
+                if xbmcvfs.exists(self._syncPath):
                     #move the old sync path to the new one
                     log('Moving sync location for %s from %s to %s'%(self.account_name, self._syncPath, tempPath))
                     names = os.listdir(self._syncPath)
@@ -191,7 +191,7 @@ class SyncAccount(object):
             if self.root:
                 #restart the synchronization 
                 #remove all the files in current syncPath
-                if xbmcvfs.exists(self._syncPath.encode("utf-8")) and len(os.listdir(self._syncPath)) > 0:
+                if xbmcvfs.exists(self._syncPath) and len(os.listdir(self._syncPath)) > 0:
                     shutil.rmtree(self._syncPath)
                 #reset the complete data on client side
                 self.clearSyncData()
@@ -262,7 +262,7 @@ class SyncAccount(object):
                 for path, meta in remoteData.items():
                     if isinstance(path, str):
                         #perviously stored as str iso. unicode... So make it unicode now.
-                        path = path.decode("utf-8")
+                        path = path
                     if path.find(self.root.path) == 0:
                         self.root.setItemInfo(path, meta)
                 self.root.updateLocalRootPath(self._syncPath)

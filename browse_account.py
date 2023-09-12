@@ -42,23 +42,23 @@ class AccountBrowser(object):
     def __init__( self, params ):
         self._content_type = params.get('content_type', 'executable')
         #check if the accounts directory is present, create otherwise
-        # keep dataPath "utf-8" encoded
-        dataPath = xbmc.translatePath( ADDON.getAddonInfo('profile') ).decode("utf-8")
+
+        dataPath = xbmcvfs.translatePath( ADDON.getAddonInfo('profile') )
         self._accounts_dir = dataPath + '/accounts/'
-        if not xbmcvfs.exists( self._accounts_dir.encode("utf-8") ):
-            xbmcvfs.mkdirs( self._accounts_dir.encode("utf-8") )
+        if not xbmcvfs.exists( self._accounts_dir ):
+            xbmcvfs.mkdirs( self._accounts_dir )
         #Check if we need to get previous account settings from old addon settings
-        if ADDON.getSetting('access_token').decode("utf-8") != '':
+        if ADDON.getSetting('access_token') != '':
             #Old access_token present so convert old settings!
             log('Converting old account settings and saving it')
             account_name = 'Account1'
-            access_token = ADDON.getSetting('access_token').decode("utf-8")
+            access_token = ADDON.getSetting('access_token')
             client = XBMCDropBoxClient(access_token=access_token)
             account_info = client.getAccountInfo()
             if 'display_name' in account_info:
                 account_name = path_from(account_info['display_name'])
             new_account = AccountSettings(account_name)
-            new_account.access_token = ADDON.getSetting('access_token').decode("utf-8")
+            new_account.access_token = ADDON.getSetting('access_token')
             new_account.passcode = ADDON.getSetting('passcode')
             passcodetimeout = ADDON.getSetting('passcodetimeout')
             if passcodetimeout != '':
@@ -68,8 +68,8 @@ class AccountBrowser(object):
             syncfreq = ADDON.getSetting('syncfreq')
             if syncfreq != '':
                 new_account.syncfreq = int( syncfreq )
-            new_account.syncpath = ADDON.getSetting('syncpath').decode("utf-8")
-            new_account.remotepath = ADDON.getSetting('remotepath').decode("utf-8")
+            new_account.syncpath = ADDON.getSetting('syncpath')
+            new_account.remotepath = ADDON.getSetting('remotepath')
             new_account.save()
             #Now clear all old settings
             ADDON.setSetting('access_token', '')
@@ -79,17 +79,17 @@ class AccountBrowser(object):
             ADDON.setSetting('syncpath', '')
             ADDON.setSetting('remotepath', '')
             #cleanup old cache and shadow dirs
-            #keep cache_path "utf-8" encoded
+
             cache_path = ADDON.getSetting('cachepath')
             #Use user defined location?
             if cache_path == '' or os.path.normpath(cache_path) == '':
                 #get the default path 
-                cache_path = xbmc.translatePath( ADDON.getAddonInfo('profile') )
+                cache_path = xbmcvfs.translatePath( ADDON.getAddonInfo('profile') )
             shadowPath = os.path.normpath(cache_path + '/shadow/')
             thumbPath = os.path.normpath(cache_path + '/thumb/')
-            if xbmcvfs.exists(shadowPath.encode("utf-8")):
+            if xbmcvfs.exists(shadowPath):
                 shutil.rmtree(shadowPath)
-            if xbmcvfs.exists(thumbPath.encode("utf-8")):
+            if xbmcvfs.exists(thumbPath):
                 shutil.rmtree(thumbPath)
             #Notify the DropboxSynchronizer of the new account
             NotifySyncClient().account_added_removed()
@@ -97,11 +97,11 @@ class AccountBrowser(object):
 
     def buildList(self):
         #get the present accounts (in unicode!)
-        names = os.listdir(self._accounts_dir.decode("utf-8"))
+        names = os.listdir(self._accounts_dir)
         for name in names:
             self.add_account(name)
         #add the account action items
-        sessionId = ADDON.getSetting('session_id').decode("utf-8")
+        sessionId = ADDON.getSetting('session_id')
         if sessionId == '':
             #add new account
             self.add_action(LANGUAGE_STRING(30042), 'add')
@@ -120,12 +120,12 @@ class AccountBrowser(object):
             iconImage = 'DefaultAddonVideo.png'
         elif self._content_type == 'image':
             iconImage = 'DefaultAddonPicture.png'
-        listItem = xbmcgui.ListItem(name.encode("utf-8"), iconImage=iconImage, thumbnailImage=iconImage)
+        listItem = xbmcgui.ListItem(name, iconImage=iconImage, thumbnailImage=iconImage)
         #Create the url
         url = sys.argv[0]
         url += '?content_type=' + self._content_type
         url += "&module=" + 'browse_folder'
-        url +="&account=" + urllib.parse.quote(name.encode("utf-8"))
+        url +="&account=" + urllib.parse.quote(name)
         #Add a context menu item
         contextMenuItems = []
         contextMenuItems.append( (LANGUAGE_STRING(30044), self.getContextUrl('remove', name) ) )
@@ -135,22 +135,27 @@ class AccountBrowser(object):
         xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=url, listitem=listItem, isFolder=True)
 
     def add_action(self, name, action):
-        iconImage='DefaultAddSource.png'
-        listItem = xbmcgui.ListItem(name, iconImage=iconImage, thumbnailImage=iconImage)
-        #Create the url
+        iconImage = 'DefaultAddSource.png'
+
+        # Create the list item without specifying 'iconImage' and 'thumbnailImage' here
+        listItem = xbmcgui.ListItem(name)
+
+        # Create the URL for the item
         url = sys.argv[0]
         url += '?content_type=' + self._content_type
         url += "&module=" + 'browse_account'
-        url +="&action=" + 'add'
+        url += "&action=" + 'add'
         contextMenuItems = []
+        # Add the context menu items to the list item
         listItem.addContextMenuItems(contextMenuItems, replaceItems=True)
+        # Finally, add the list item to the directory
         xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=url, listitem=listItem, isFolder=True)
 
     def getContextUrl(self, action, account_name):
         url = 'XBMC.RunPlugin(plugin://plugin.dbmc/?'
         url += 'action=%s' %( action )
         url += "&module=" + 'browse_account'
-        url += '&account=' + urllib.parse.quote(account_name.encode("utf-8"))
+        url += '&account=' + urllib.parse.quote(account_name)
         url += ')'
         return url
 
@@ -211,7 +216,7 @@ def change_synchronization(account_settings):
         dialog = xbmcgui.Dialog()
         # 3= ShowAndGetWriteableDirectory, 
         selected_folder = dialog.browse(3, LANGUAGE_STRING(30102), 'files', mask='', treatAsFolder=True, defaultt=account_settings.syncpath)
-        selected_folder = selected_folder.decode("utf-8")
+        selected_folder = selected_folder
         log_debug('Selected local folder: %s' % (selected_folder) )
         if selected_folder != '':
             account_settings.syncpath = selected_folder

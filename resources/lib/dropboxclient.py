@@ -65,7 +65,7 @@ def path_to(path):
     This functions makes sure that it is utf-8.
     '''
     if isinstance (path, str):
-        path = path.encode("utf-8")
+        path = path
     return path
 
 def path_from(path):
@@ -75,7 +75,7 @@ def path_from(path):
     '''
     if isinstance (path, str):
         log_error("Dropbox path is not unicode! %s"%(path))
-        path = path.decode("utf-8")
+        path = path
     return path
 
 def getLocalSyncPath(localSyncPath, remoteSyncPath, itemPath):
@@ -297,8 +297,8 @@ class XBMCDropBoxClient(object):
         succes = False
         dirName = os.path.dirname(location) + os.sep #add os seperator because it is a dir
         # create the data dir if needed
-        if not xbmcvfs.exists( dirName.encode("utf-8") ):
-            xbmcvfs.mkdirs( dirName.encode("utf-8") )
+        if not xbmcvfs.exists( dirName ):
+            xbmcvfs.mkdirs( dirName )
         try:
             cacheFile = open(location, 'wb') # 'b' option required for windows!
             #download the file
@@ -320,8 +320,8 @@ class XBMCDropBoxClient(object):
         succes = False
         dirName = os.path.dirname(location) + os.sep #add os seperator because it is a dir 
         # create the data dir if needed
-        if not xbmcvfs.exists( dirName.encode("utf-8") ):
-            xbmcvfs.mkdirs( dirName.encode("utf-8") )
+        if not xbmcvfs.exists( dirName ):
+            xbmcvfs.mkdirs( dirName )
         try:
             cacheFile = open(location, 'wb') # 'b' option required for windows!
             #download the file
@@ -432,8 +432,8 @@ class Downloader(threading.Thread):
                 if item2Retrieve['is_dir']:
                     location += os.sep #add os seperator because it is a dir
                     #create dir if not present yet
-                    if not xbmcvfs.exists( location.encode("utf-8") ):
-                        xbmcvfs.mkdirs( location.encode("utf-8") )
+                    if not xbmcvfs.exists( location ):
+                        xbmcvfs.mkdirs( location )
                 else:
                     if not self._client.saveFile(item2Retrieve['path'], location):
                         log_error("Downloader failed for: %s"%( path_from(item2Retrieve['path']) ) )

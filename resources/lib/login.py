@@ -39,7 +39,7 @@ def unlock(account_settings):
     win = xbmcgui.Window(xbmcgui.getCurrentWindowId())
     if (account_settings.passcode != ''):
         #create windows property name
-        win_prop_name = urllib.parse.quote(account_settings.account_name.encode("utf-8") + 'Unlocked')
+        win_prop_name = urllib.parse.quote(account_settings.account_name + 'Unlocked')
         unlockTimeout = account_settings.passcodetimeout * 60 # to minutes
         #get last unlocked time
         try:
@@ -65,7 +65,7 @@ def unlock(account_settings):
     return unlocked
 
 def clear_unlock(account_settings):
-    win_prop_name = urllib.parse.quote(account_settings.account_name.encode("utf-8") + 'Unlocked')
+    win_prop_name = urllib.parse.quote(account_settings.account_name + 'Unlocked')
     win = xbmcgui.Window(xbmcgui.getCurrentWindowId())
     win.clearProperty(win_prop_name)
 
@@ -86,7 +86,7 @@ def get_account(account_name):
 def getAccessToken():
     access_token = None
     #Get the session_id (uuid). Create one if there is none yet.
-    sessionId = ADDON.getSetting('session_id').decode("utf-8")
+    sessionId = ADDON.getSetting('session_id')
     if sessionId == '':
          sessionId = str(uuid.uuid1())
          ADDON.setSetting('session_id', sessionId)

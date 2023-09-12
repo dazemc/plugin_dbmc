@@ -97,7 +97,7 @@ class SyncFolder(SyncObject):
             return self.OBJECT_IN_SYNC #fake object in sync...
         localPresent = False
         if self._localPath:
-            localPresent = xbmcvfs.exists(self._localPath.encode("utf-8"))
+            localPresent = xbmcvfs.exists(self._localPath)
         elif self._remotePresent:
             log_error("Has no localPath! %s"%self.path)
         #File present
@@ -123,7 +123,7 @@ class SyncFolder(SyncObject):
             self._state = self.inSync() 
             if self._state == self.OBJECT_2_DOWNLOAD:
                 log_debug('Create folder: %s'%self._localPath)
-                xbmcvfs.mkdirs( self._localPath.encode("utf-8") )
+                xbmcvfs.mkdirs( self._localPath )
                 self.updateTimeStamp()
             elif self._state == self.OBJECT_2_UPLOAD:
                 log_error('Can\'t upload folder: %s'%self._localPath)

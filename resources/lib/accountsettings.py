@@ -34,7 +34,7 @@ class AccountSettings(object):
     
     def __init__(self, account_name):
         if isinstance (account_name,str):
-            self.account_name = account_name.decode("utf-8")
+            self.account_name = account_name
         else:
             self.account_name = account_name
         self.access_token = ''
@@ -45,10 +45,10 @@ class AccountSettings(object):
         self.syncfreq = 5
         self.syncpath = ''
         self.remotepath = ''
-        dataPath = xbmc.translatePath( ADDON.getAddonInfo('profile') ).decode("utf-8")
+        dataPath = xbmcvfs.translatePath( ADDON.getAddonInfo('profile') )
         self.account_dir = os.path.normpath(dataPath + '/accounts/' + self.account_name) + os.sep #add os seperator because it is a dir
         #read from location if present
-        if xbmcvfs.exists( self.account_dir.encode("utf-8") ):
+        if xbmcvfs.exists( self.account_dir ):
             self.load()
             #Don't use the stored account_dir 
             self.account_dir = os.path.normpath(dataPath + '/accounts/' + self.account_name) + os.sep #add os seperator because it is a dir
@@ -67,17 +67,17 @@ class AccountSettings(object):
             self.__dict__.update(tmp_dict)
         #correct the items; make sure that they are unicode...)
         if isinstance (self.account_name,str):
-            self.account_name = self.account_name.decode("utf-8")
+            self.account_name = self.account_name
         if isinstance (self.syncpath,str):
-            self.syncpath = self.syncpath.decode("utf-8")
+            self.syncpath = self.syncpath
         if isinstance (self.remotepath,str):
-            self.remotepath = self.remotepath.decode("utf-8")
+            self.remotepath = self.remotepath
         
     def save(self):
         log_debug('Save account settings: %s' % (self.account_name) )
         #check if the account directory is present, create otherwise
-        if not xbmcvfs.exists( self.account_dir.encode("utf-8") ):
-            xbmcvfs.mkdirs( self.account_dir.encode("utf-8") )
+        if not xbmcvfs.exists( self.account_dir ):
+            xbmcvfs.mkdirs( self.account_dir )
         #Save...
         settings_file = os.path.normpath(self.account_dir + 'settings')
         try:

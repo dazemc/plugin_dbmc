@@ -1,5 +1,5 @@
 import os, sys, urllib.request, urllib.parse, urllib.error, time
-import xbmcvfs, xbmcaddon
+import xbmcvfs, xbmcaddon, xbmc
 
 ADDON           = xbmcaddon.Addon(id='plugin.dbmc')
 LANGUAGE_STRING = ADDON.getLocalizedString
@@ -10,22 +10,22 @@ DATAPATH        = xbmcvfs.translatePath( xbmcaddon.Addon().getAddonInfo('profile
 DROPBOX_SEP     = '/'
 
 def log(txt):
-    if isinstance (txt,str):
-        txt = txt.decode("utf-8")
+    # if isinstance (txt,str):
+    #     txt = txt
     message = '%s: %s' % (ADDON_NAME, txt)
-    xbmc.log(msg=message.encode("utf-8"), level=xbmc.LOGNOTICE)
+    xbmc.log(msg=message, level=xbmc.LOGINFO)
     
 def log_error(txt):
-    if isinstance (txt,str):
-        txt = txt.decode("utf-8")
+    # if isinstance (txt,str):
+    #     txt = txt
     message = '%s: %s' % (ADDON_NAME, txt)
-    xbmc.log(msg=message.encode("utf-8"), level=xbmc.LOGERROR)
+    xbmc.log(msg=message, level=xbmc.LOGERROR)
 
 def log_debug(txt):
-    if isinstance (txt,str):
-        txt = txt.decode("utf-8")
+    # if isinstance (txt,str):
+    #     txt = txt
     message = '%s: %s' % (ADDON_NAME, txt)
-    xbmc.log(msg=message.encode("utf-8"), level=xbmc.LOGDEBUG)
+    xbmc.log(msg=message, level=xbmc.LOGWARNING)
 
 def parse_argv():
     # parse argv
@@ -46,7 +46,7 @@ def parse_argv():
         return True, params
 
 def get_cache_path(account_name):
-    datapath = ADDON.getSetting('cachepath').decode("utf-8")
+    datapath = ADDON.getSetting('cachepath')
     #Use user defined location?
     if datapath == '' or os.path.normpath(datapath) == '':
         #get the default path 

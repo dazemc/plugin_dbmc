@@ -2,6 +2,7 @@ import json
 import requests
 import os
 from . import six
+import io
 
 SDK_VERSION = "2.2.0"
 
