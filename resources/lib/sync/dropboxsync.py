@@ -51,7 +51,7 @@ class DropboxSynchronizer:
         self.update_accounts()
         self._notified = NotifySyncServer()
         self._notified.start()
-        while (not xbmc.abortRequested):
+        while (not xbmc.Monitor().abortRequested):
             # First get all notifications
             account_name, notification = self._notified.getNotification()
             if notification:

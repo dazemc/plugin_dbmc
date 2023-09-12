@@ -132,8 +132,8 @@ class DropboxViewer(object):
         '''When xbmc quits or the plugin(visible menu) is changed, stop this thread'''
         #win = xbmcgui.Window(xbmcgui.getCurrentWindowId())
         session = self.win.getProperty('SessionId')
-        if xbmc.abortRequested:
-            log_debug("xbmc.abortRequested")
+        if xbmc.Monitor().abortRequested:
+            log_debug("xbmc.Monitor().abortRequested")
             return True
         elif session != self._session:
             log_debug("SessionId changed")
