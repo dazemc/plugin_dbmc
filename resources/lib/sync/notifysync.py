@@ -72,12 +72,15 @@ class NotifySyncServer(threading.Thread):
             s.sendall('')
         except socket.error as e:
             log_error("NotifySyncServer EXCEPTION : %s" %(repr(e)) )
+
         finally:
             if s:
                 s.close()
         #wait for the thread
-        self.join()
-        
+        try:
+            self.join()
+        except TypeError as e:
+            log_debug(f"TypeError: {e}")
     def getNotification(self):
         '''
         returns one notification per call
